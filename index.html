@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patient Record System - Patients</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="module" src="./js/index.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <!-- ADMIN NAV / DASHBOARD -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#006400">
+      <div class="container-fluid">
+        <span class="navbar-brand">Patient Record System - Admin</span>
+        <div class="navbar-nav">
+          <a class="nav-link active" href="index.html">Patients</a>
+          <a class="nav-link" href="doctors.html">Doctors</a>
+          <a class="nav-link" href="medicines.html">Medicines</a>
+          <a class="nav-link" href="specializations.html">Specializations</a>
+          <a class="nav-link" href="diagnoses.html">Diagnoses / ICD-10</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <div id="header-div">
+        <h1 id="header-text">Patients Master File</h1>
+        <p class="text-muted">Manage the master list of patients used across Appointments, Consultations and Billing.</p>
+      </div>
+
+      <div id="main-div" class="card p-3 mb-3">
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <input type="text" class="form-control" id="first-name" placeholder="First Name" />
+          </div>
+          <div class="col-md-6">
+            <input type="text" class="form-control" id="last-name" placeholder="Last Name" />
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <input type="date" class="form-control" id="birth-date" placeholder="Date of Birth" />
+          </div>
+          <div class="col-md-6">
+            <select class="form-select" id="gender">
+              <option value="" disabled selected>Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <input type="text" class="form-control" id="phone" placeholder="Phone" />
+          </div>
+          <div class="col-md-6">
+            <input type="text" class="form-control" id="address" placeholder="Address" />
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <button type="button" class="btn btn-primary w-100" id="btn-submit">
+              Add Patient
+            </button>
+          </div>
+          <div class="col-md-6">
+            <div class="form-check form-switch pt-2">
+              <input class="form-check-input" type="checkbox" id="show-inactive" />
+              <label class="form-check-label" for="show-inactive">Show inactive patients</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="table-div"></div>
+      <div id="footer-div"></div>
+    </div>
+
+    <!-- BLANK MODAL -->
+    <div class="modal fade" id="blank-modal" role="modal">
+      <div class="modal-dialog modal-md">
+        <div class="modal-content">
+          <div class="modal-header text-white" style="background-color:#006400">
+            <h5 class="modal-title" id="blank-modal-title">Modal Title</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="blank-modal-body">
+            <div class="row" id="blank-main-div" style="padding:5px;"></div>
+          </div>
+          <div class="modal-footer" id="blank-modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm w-100" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
