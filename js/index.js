@@ -39,7 +39,6 @@ const displayPatientsTable = (patients) => {
   const thead = document.createElement("thead");
   thead.innerHTML = `
     <tr>
-      <th>ID</th>
       <th>LAST NAME</th>
       <th>FIRST NAME</th>
       <th>DATE OF BIRTH</th>
@@ -62,7 +61,6 @@ const displayPatientsTable = (patients) => {
       if (!isActive) row.classList.add("table-secondary");
 
       row.innerHTML = `
-        <td>${patient.PatientID}</td>
         <td>${patient.LastName}</td>
         <td>${patient.FirstName}</td>
         <td>${patient.DateOfBirth}</td>
