@@ -41,6 +41,26 @@
 
       <div id="main-div" class="card p-3 mb-3">
         <div class="row mt-2">
+          <div class="col-md-12 position-relative">
+            <input
+              type="text"
+              class="form-control"
+              id="icd10-search"
+              placeholder="Search the official ICD-10-CM list by code or condition (e.g. J00 or common cold)"
+              autocomplete="off"
+            />
+            <div
+              id="icd10-search-results"
+              class="list-group position-absolute w-100 shadow-sm"
+              style="z-index: 1000; max-height: 240px; overflow-y: auto; display: none;"
+            ></div>
+            <div class="form-text">
+              Powered by the U.S. National Library of Medicine's ICD-10-CM lookup. Pick a result
+              to auto-fill the Code and Name below, or type your own.
+            </div>
+          </div>
+        </div>
+        <div class="row mt-2">
           <div class="col-md-4">
             <input type="text" class="form-control" id="icd10-code" placeholder="ICD-10 Code (e.g. J00)" />
           </div>

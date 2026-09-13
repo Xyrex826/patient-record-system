@@ -15,7 +15,81 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("show-inactive").addEventListener("change", () => {
     displayDiagnoses();
   });
+
+  setupIcd10Search();
 });
+
+// ------------------------------------------------------------------
+// ICD-10-CM lookup, so the admin can search official codes/names
+// instead of typing them from memory. Uses the free, keyless NLM
+// Clinical Table Search Service - no login or API key required.
+// Docs: https://clinicaltables.nlm.nih.gov/apidoc/icd10cm/v3/doc.html
+// ------------------------------------------------------------------
+const ICD10_SEARCH_URL = "https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search";
+
+const setupIcd10Search = () => {
+  const searchInput = document.getElementById("icd10-search");
+  const resultsBox = document.getElementById("icd10-search-results");
+  let debounceTimer;
+
+  searchInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    const terms = searchInput.value.trim();
+
+    if (terms.length < 2) {
+      resultsBox.style.display = "none";
+      resultsBox.innerHTML = "";
+      return;
+    }
+
+    debounceTimer = setTimeout(() => searchIcd10(terms, resultsBox), 300);
+  });
+
+  // Hide the results dropdown when clicking elsewhere on the page.
+  document.addEventListener("click", (event) => {
+    if (event.target !== searchInput) {
+      resultsBox.style.display = "none";
+    }
+  });
+};
+
+const searchIcd10 = async (terms, resultsBox) => {
+  try {
+    const response = await axios.get(ICD10_SEARCH_URL, {
+      params: { sf: "code,name", terms: terms, maxList: 10 },
+    });
+
+    // The service returns a plain positional array (not an object):
+    // [totalCount, codes[], extraDataOrNull, [[code, name], ...]]
+    const matches = response.data[3] ?? [];
+
+    if (matches.length === 0) {
+      resultsBox.innerHTML = `<div class="list-group-item text-muted">No matches found.</div>`;
+      resultsBox.style.display = "block";
+      return;
+    }
+
+    resultsBox.innerHTML = "";
+    matches.forEach(([code, name]) => {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.classList.add("list-group-item", "list-group-item-action");
+      item.innerHTML = `<strong>${code}</strong> — ${name}`;
+      item.addEventListener("click", () => {
+        document.getElementById("icd10-code").value = code;
+        document.getElementById("diagnosis-name").value = name;
+        document.getElementById("icd10-search").value = "";
+        resultsBox.style.display = "none";
+        resultsBox.innerHTML = "";
+      });
+      resultsBox.appendChild(item);
+    });
+    resultsBox.style.display = "block";
+  } catch (error) {
+    resultsBox.innerHTML = `<div class="list-group-item text-danger">Lookup failed. You can still type the code manually.</div>`;
+    resultsBox.style.display = "block";
+  }
+};
 
 const displayDiagnoses = async () => {
   const response = await axios.get(`${baseApiUrl}/diagnoses.php`, {
@@ -153,6 +227,7 @@ const restoreDiagnosis = async (diagnosisId) => {
 };
 
 const clearForm = () => {
+  document.getElementById("icd10-search").value = "";
   document.getElementById("icd10-code").value = "";
   document.getElementById("diagnosis-name").value = "";
   document.getElementById("description").value = "";
