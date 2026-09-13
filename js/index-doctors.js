@@ -18,19 +18,35 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Same technique as courses.php -> the "course" <select> in the reference
-// material: fetch the lookup table and use it to populate a <select>.
+// Fetches the lookup table and renders it as a list of checkboxes so the
+// user can just click each specialization that applies (instead of having
+// to Ctrl/Cmd+click inside a <select multiple>).
 const displaySpecializations = async () => {
-  const select = document.getElementById("specializations");
+  const container = document.getElementById("specializations");
   const response = await axios.get(`${baseApiUrl}/specializations.php`, {
     params: { operation: "getSpecializations" },
   });
   if (response.status == 200) {
+    container.innerHTML = "";
     response.data.forEach((spec) => {
-      const option = document.createElement("option");
-      option.innerText = spec.SpecializationName;
-      option.value = spec.SpecializationID;
-      select.appendChild(option);
+      const wrapper = document.createElement("div");
+      wrapper.classList.add("form-check");
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.classList.add("form-check-input");
+      checkbox.value = spec.SpecializationID;
+      checkbox.id = `spec-${spec.SpecializationID}`;
+      checkbox.name = "specializations";
+
+      const label = document.createElement("label");
+      label.classList.add("form-check-label");
+      label.htmlFor = checkbox.id;
+      label.innerText = spec.SpecializationName;
+
+      wrapper.appendChild(checkbox);
+      wrapper.appendChild(label);
+      container.appendChild(wrapper);
     });
   } else {
     alert("Error!");
@@ -129,10 +145,11 @@ const displayDoctorsTable = (doctors) => {
   tableDiv.appendChild(table);
 };
 
-// Reads the selected <option>s out of the multi-select the same way
-// you'd read any other form field, just via [...select.selectedOptions].
-const getSelectedSpecializationIds = (selectEl) => {
-  return [...selectEl.selectedOptions].map((opt) => opt.value);
+// Reads the checked specialization checkboxes out of the container.
+const getSelectedSpecializationIds = (containerEl) => {
+  return [...containerEl.querySelectorAll("input[type='checkbox']:checked")].map(
+    (checkbox) => checkbox.value
+  );
 };
 
 const insertDoctor = async () => {
@@ -191,5 +208,7 @@ const clearForm = () => {
   document.getElementById("username").value = "";
   document.getElementById("password").value = "";
   document.getElementById("phone").value = "";
-  document.getElementById("specializations").selectedIndex = -1;
+  document
+    .querySelectorAll("#specializations input[type='checkbox']")
+    .forEach((checkbox) => (checkbox.checked = false));
 };

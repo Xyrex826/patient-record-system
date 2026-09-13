@@ -64,8 +64,13 @@
             <input type="text" class="form-control" id="phone" placeholder="Phone" />
           </div>
           <div class="col-md-6">
-            <select class="form-select" id="specializations" multiple size="4"></select>
-            <div class="form-text">Ctrl/Cmd+click to select more than one.</div>
+            <label class="form-label mb-1">Specializations</label>
+            <div
+              id="specializations"
+              class="border rounded p-2"
+              style="max-height: 140px; overflow-y: auto;"
+            ></div>
+            <div class="form-text">Check all specializations that apply.</div>
           </div>
         </div>
         <div class="row mt-2">

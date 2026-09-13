@@ -6,12 +6,22 @@ export const updateModal = async (doctorId, refreshDisplay) => {
   const specializations = await getSpecializations();
   const selectedIds = d.specializations.map((s) => String(s.SpecializationID));
 
-  const options = specializations
+  const checkboxes = specializations
     .map(
-      (s) =>
-        `<option value="${s.SpecializationID}" ${
-          selectedIds.includes(String(s.SpecializationID)) ? "selected" : ""
-        }>${s.SpecializationName}</option>`
+      (s) => `
+        <div class="form-check">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            id="upd-spec-${s.SpecializationID}"
+            value="${s.SpecializationID}"
+            ${selectedIds.includes(String(s.SpecializationID)) ? "checked" : ""}
+          />
+          <label class="form-check-label" for="upd-spec-${s.SpecializationID}">
+            ${s.SpecializationName}
+          </label>
+        </div>
+      `
     )
     .join("");
 
@@ -38,8 +48,12 @@ export const updateModal = async (doctorId, refreshDisplay) => {
     </div>
     <div class="col-12 mb-2">
       <label class="form-label">Specializations</label>
-      <select class="form-select" id="upd-specializations" multiple size="4">${options}</select>
-      <div class="form-text">Ctrl/Cmd+click to select more than one.</div>
+      <div
+        id="upd-specializations"
+        class="border rounded p-2"
+        style="max-height: 140px; overflow-y: auto;"
+      >${checkboxes}</div>
+      <div class="form-text">Check all specializations that apply.</div>
     </div>
   `;
 
@@ -59,7 +73,7 @@ export const updateModal = async (doctorId, refreshDisplay) => {
   });
 
   modalFooter.querySelector(".btn-save").addEventListener("click", async () => {
-    const specSelect = document.getElementById("upd-specializations");
+    const specContainer = document.getElementById("upd-specializations");
     const jsonData = {
       doctorId: d.DoctorID,
       userId: d.UserID,
@@ -68,7 +82,9 @@ export const updateModal = async (doctorId, refreshDisplay) => {
       username: document.getElementById("upd-username").value,
       password: document.getElementById("upd-password").value, // blank = keep current
       phone: document.getElementById("upd-phone").value,
-      specializationIds: [...specSelect.selectedOptions].map((opt) => opt.value),
+      specializationIds: [
+        ...specContainer.querySelectorAll("input[type='checkbox']:checked"),
+      ].map((checkbox) => checkbox.value),
     };
 
     if (await updateDoctor(jsonData) == 1) {
