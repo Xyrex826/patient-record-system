@@ -61,7 +61,15 @@
         </div>
         <div class="row mt-2">
           <div class="col-md-6">
-            <input type="text" class="form-control" id="phone" placeholder="Phone" />
+            <input
+              type="text"
+              class="form-control"
+              id="phone"
+              placeholder="Phone"
+              inputmode="numeric"
+              pattern="[0-9]{7,15}"
+              title="Digits only, 7-15 numbers, no negative sign or letters"
+            />
           </div>
           <div class="col-md-6">
             <label class="form-label mb-1">Specializations</label>

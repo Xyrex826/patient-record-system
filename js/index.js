@@ -109,6 +109,10 @@ const displayPatientsTable = (patients) => {
   tableDiv.appendChild(table);
 };
 
+// Phone is optional, but if typed in it must be 7-15 digits only -
+// no "-" (so no negative numbers), "+", letters, or spaces.
+const isValidPhone = (phone) => phone.trim() === "" || /^[0-9]{7,15}$/.test(phone.trim());
+
 const insertPatient = async () => {
   const jsonData = {
     firstName: document.getElementById("first-name").value,
@@ -121,6 +125,11 @@ const insertPatient = async () => {
 
   if (!jsonData.firstName || !jsonData.lastName || !jsonData.dob || !jsonData.gender) {
     alert("Please fill in First Name, Last Name, Date of Birth and Gender.");
+    return;
+  }
+
+  if (!isValidPhone(jsonData.phone)) {
+    alert("Phone must contain digits only (7-15 digits), with no negative sign or letters.");
     return;
   }
 
@@ -138,6 +147,8 @@ const insertPatient = async () => {
     clearForm();
     displayPatients();
     alert("Patient successfully saved!");
+  } else if (response.data?.error === "invalid_phone") {
+    alert("Phone must contain digits only (7-15 digits), with no negative sign or letters.");
   } else {
     alert("ERROR");
   }

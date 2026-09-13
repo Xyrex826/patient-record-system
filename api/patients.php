@@ -4,6 +4,14 @@ header("Access-Control-Allow-Origin: *");
 
 class Patient {
 
+    // Phone is optional, but if the admin does type one in it must be
+    // 7-15 digits only - no "-", "+", letters, spaces, etc. This is what
+    // blocks a negative number (or any other garbage) from being saved.
+    private function isValidPhone($phone) {
+        $phone = trim($phone ?? "");
+        return $phone === "" || preg_match('/^[0-9]{7,15}$/', $phone) === 1;
+    }
+
     // Returns ALL patients (Active + Inactive) - used by the admin master file screen
     function getAllPatients() {
         include "connection-pdo.php";
@@ -40,6 +48,11 @@ class Patient {
     function insertPatient($json) {
         include "connection-pdo.php";
         $json = json_decode($json, true);
+
+        if (!$this->isValidPhone($json['phone'])) {
+            return json_encode(["error" => "invalid_phone"]);
+        }
+
         $sql = "INSERT INTO PATIENT (FirstName, LastName, DateOfBirth, Gender, Phone, Address, Status)
                 VALUES (:firstName, :lastName, :dob, :gender, :phone, :address, 'Active')";
         $stmt = $conn->prepare($sql);
@@ -61,6 +74,11 @@ class Patient {
     function updatePatient($json) {
         include "connection-pdo.php";
         $json = json_decode($json, true);
+
+        if (!$this->isValidPhone($json['phone'])) {
+            return json_encode(["error" => "invalid_phone"]);
+        }
+
         $sql = "UPDATE PATIENT SET
                     FirstName = :firstName,
                     LastName = :lastName,

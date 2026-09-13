@@ -1,3 +1,7 @@
+// Phone is optional, but if typed in it must be 7-15 digits only -
+// no "-" (so no negative numbers), "+", letters, or spaces.
+const isValidPhone = (phone) => phone.trim() === "" || /^[0-9]{7,15}$/.test(phone.trim());
+
 export const updateModal = async (doctorId, refreshDisplay) => {
   document.getElementById("blank-modal-title").innerText = "Update Doctor";
 
@@ -87,10 +91,18 @@ export const updateModal = async (doctorId, refreshDisplay) => {
       ].map((checkbox) => checkbox.value),
     };
 
-    if (await updateDoctor(jsonData) == 1) {
+    if (!isValidPhone(jsonData.phone)) {
+      alert("Phone must contain digits only (7-15 digits), with no negative sign or letters.");
+      return;
+    }
+
+    const result = await updateDoctor(jsonData);
+    if (result == 1) {
       refreshDisplay();
       alert("Doctor updated!");
       myModal.hide();
+    } else if (result?.error === "invalid_phone") {
+      alert("Phone must contain digits only (7-15 digits), with no negative sign or letters.");
     } else {
       alert("ERROR");
     }

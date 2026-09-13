@@ -41,13 +41,40 @@ class Specialization {
         return json_encode($rs);
     }
 
+    // Case-insensitive, whitespace-trimmed duplicate check. $excludeId lets
+    // updateSpecialization ignore the row being edited (so saving a record
+    // without changing its name doesn't flag itself as a duplicate).
+    private function specializationNameExists($conn, $name, $excludeId = null) {
+        $sql = "SELECT COUNT(*) AS cnt FROM SPECIALIZATION
+                WHERE LOWER(TRIM(SpecializationName)) = LOWER(TRIM(:name))";
+        if ($excludeId !== null) {
+            $sql .= " AND SpecializationID != :excludeId";
+        }
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(":name", $name);
+        if ($excludeId !== null) {
+            $stmt->bindParam(":excludeId", $excludeId);
+        }
+        $stmt->execute();
+        return (int) $stmt->fetch(PDO::FETCH_ASSOC)['cnt'] > 0;
+    }
+
     function insertSpecialization($json) {
         include "connection-pdo.php";
         $json = json_decode($json, true);
+        $name = trim($json['name']);
+
+        if ($name === "") {
+            return json_encode(["error" => "empty_name"]);
+        }
+        if ($this->specializationNameExists($conn, $name)) {
+            return json_encode(["error" => "duplicate"]);
+        }
+
         $sql = "INSERT INTO SPECIALIZATION(SpecializationName, Description)
                 VALUES(:name, :description)";
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(":name", $json['name']);
+        $stmt->bindParam(":name", $name);
         $stmt->bindParam(":description", $json['description']);
         $stmt->execute();
         $returnValue = $stmt->rowCount() > 0 ? 1 : 0;
@@ -57,11 +84,20 @@ class Specialization {
     function updateSpecialization($json) {
         include "connection-pdo.php";
         $json = json_decode($json, true);
+        $name = trim($json['name']);
+
+        if ($name === "") {
+            return json_encode(["error" => "empty_name"]);
+        }
+        if ($this->specializationNameExists($conn, $name, $json['specializationId'])) {
+            return json_encode(["error" => "duplicate"]);
+        }
+
         $sql = "UPDATE SPECIALIZATION
                 SET SpecializationName = :name, Description = :description
                 WHERE SpecializationID = :specializationId";
         $stmt = $conn->prepare($sql);
-        $stmt->bindParam(":name", $json['name']);
+        $stmt->bindParam(":name", $name);
         $stmt->bindParam(":description", $json['description']);
         $stmt->bindParam(":specializationId", $json['specializationId']);
         $stmt->execute();

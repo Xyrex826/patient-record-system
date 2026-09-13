@@ -81,7 +81,7 @@ const displaySpecializationsTable = (specializations) => {
 
 const insertSpecialization = async () => {
   const jsonData = {
-    name: document.getElementById("specialization-name").value,
+    name: document.getElementById("specialization-name").value.trim(),
     description: document.getElementById("description").value,
   };
 
@@ -104,6 +104,8 @@ const insertSpecialization = async () => {
     clearForm();
     displaySpecializations();
     alert("Specialization successfully saved!");
+  } else if (response.data?.error === "duplicate") {
+    alert(`"${jsonData.name}" already exists in the list. Please use a different name.`);
   } else {
     alert("ERROR");
   }

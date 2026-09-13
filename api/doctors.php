@@ -4,6 +4,14 @@ header("Access-Control-Allow-Origin: *");
 
 class Doctor {
 
+    // Phone is optional, but if the admin does type one in it must be
+    // 7-15 digits only - no "-", "+", letters, spaces, etc. This is what
+    // blocks a negative number (or any other garbage) from being saved.
+    private function isValidPhone($phone) {
+        $phone = trim($phone ?? "");
+        return $phone === "" || preg_match('/^[0-9]{7,15}$/', $phone) === 1;
+    }
+
     // Returns ALL doctors (Active + Inactive) - used by the admin master file screen.
     // Joins USERS for identity/login info and GROUP_CONCATs specialization names
     // (from the DOCTOR_SPECIALIZATION junction) so the table can show them in one column.
@@ -80,6 +88,10 @@ class Doctor {
         $json = json_decode($json, true);
         $specializationIds = isset($json['specializationIds']) ? $json['specializationIds'] : [];
 
+        if (!$this->isValidPhone($json['phone'])) {
+            return json_encode(["error" => "invalid_phone"]);
+        }
+
         try {
             $conn->beginTransaction();
 
@@ -123,6 +135,10 @@ class Doctor {
         include "connection-pdo.php";
         $json = json_decode($json, true);
         $specializationIds = isset($json['specializationIds']) ? $json['specializationIds'] : [];
+
+        if (!$this->isValidPhone($json['phone'])) {
+            return json_encode(["error" => "invalid_phone"]);
+        }
 
         try {
             $conn->beginTransaction();

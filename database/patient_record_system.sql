@@ -99,7 +99,12 @@ CREATE TABLE IF NOT EXISTS USERS (
 CREATE TABLE IF NOT EXISTS SPECIALIZATION (
     SpecializationID   INT AUTO_INCREMENT PRIMARY KEY,
     SpecializationName VARCHAR(100) NOT NULL,
-    Description         TEXT
+    Description         TEXT,
+    -- Backs up the application-level duplicate check in api/specializations.php
+    -- at the database layer. Default collation (…_ci) is case-insensitive,
+    -- so 'Ophthalmology' and 'ophthalmology' are already treated as the same
+    -- value here.
+    UNIQUE KEY uq_specialization_name (SpecializationName)
 );
 
 INSERT INTO SPECIALIZATION (SpecializationName, Description) VALUES

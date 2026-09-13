@@ -33,7 +33,7 @@ export const updateModal = async (specializationId, refreshDisplay) => {
   modalFooter.querySelector(".btn-save").addEventListener("click", async () => {
     const jsonData = {
       specializationId: s.SpecializationID,
-      name: document.getElementById("upd-name").value,
+      name: document.getElementById("upd-name").value.trim(),
       description: document.getElementById("upd-description").value,
     };
 
@@ -42,10 +42,13 @@ export const updateModal = async (specializationId, refreshDisplay) => {
       return;
     }
 
-    if ((await updateSpecialization(jsonData)) == 1) {
+    const result = await updateSpecialization(jsonData);
+    if (result == 1) {
       refreshDisplay();
       alert("Specialization updated!");
       myModal.hide();
+    } else if (result?.error === "duplicate") {
+      alert(`"${jsonData.name}" already exists in the list. Please use a different name.`);
     } else {
       alert("ERROR");
     }

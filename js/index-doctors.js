@@ -152,6 +152,10 @@ const getSelectedSpecializationIds = (containerEl) => {
   );
 };
 
+// Phone is optional, but if typed in it must be 7-15 digits only -
+// no "-" (so no negative numbers), "+", letters, or spaces.
+const isValidPhone = (phone) => phone.trim() === "" || /^[0-9]{7,15}$/.test(phone.trim());
+
 const insertDoctor = async () => {
   const jsonData = {
     lastName: document.getElementById("last-name").value,
@@ -164,6 +168,11 @@ const insertDoctor = async () => {
 
   if (!jsonData.lastName || !jsonData.firstName || !jsonData.username || !jsonData.password) {
     alert("Please fill in Last Name, First Name, Username and Password.");
+    return;
+  }
+
+  if (!isValidPhone(jsonData.phone)) {
+    alert("Phone must contain digits only (7-15 digits), with no negative sign or letters.");
     return;
   }
 
@@ -181,6 +190,8 @@ const insertDoctor = async () => {
     clearForm();
     displayDoctors();
     alert("Doctor successfully saved!");
+  } else if (response.data?.error === "invalid_phone") {
+    alert("Phone must contain digits only (7-15 digits), with no negative sign or letters.");
   } else {
     alert("ERROR");
   }
