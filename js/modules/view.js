@@ -23,7 +23,7 @@ export const viewModal = async (patientId) => {
       </tr>
       <tr>
         <td>Gender</td>
-        <td>${patient[0].Gender}</td>
+        <td>${patient[0].Gender}${patient[0].Gender === "Other" && patient[0].GenderDetails ? ` (${patient[0].GenderDetails})` : ""}</td>
       </tr>
       <tr>
         <td>Phone</td>

@@ -20,6 +20,11 @@ CREATE TABLE IF NOT EXISTS PATIENT (
     LastName      VARCHAR(100) NOT NULL,
     DateOfBirth   DATE NOT NULL,
     Gender        VARCHAR(10)  NOT NULL,
+    -- Only populated when Gender = 'Other'. Keeps Gender itself a small,
+    -- filterable/reportable value while still letting a patient record
+    -- how they specifically identify (e.g. Non-binary, Genderfluid, etc.)
+    -- instead of flattening everything outside Male/Female into "Other".
+    GenderDetails VARCHAR(100),
     Phone         VARCHAR(20),
     Address       VARCHAR(255),
     Status        VARCHAR(10)  NOT NULL DEFAULT 'Active'   -- 'Active' | 'Inactive'
@@ -142,6 +147,17 @@ CREATE TABLE IF NOT EXISTS DOCTOR_SPECIALIZATION (
     FOREIGN KEY (SpecializationID) REFERENCES SPECIALIZATION(SpecializationID),
     UNIQUE KEY uq_doctor_specialization (DoctorID, SpecializationID)
 );
+
+-- ------------------------------------------------------------
+-- Sample login accounts for the Admin/Staff side of the system
+-- (RoleID 1 = 'Admin', 3 = 'Staff', seeded above). These are the
+-- accounts you can use to try out the Login page right away.
+--   Username: admin      Password: admin123   (Admin)
+--   Username: frontdesk  Password: staff123   (Staff)
+-- ------------------------------------------------------------
+INSERT INTO USERS (RoleID, Username, Password, FirstName, LastName, Status) VALUES
+(1, 'admin',      'admin123', 'System',   'Administrator', 'Active'),
+(3, 'frontdesk',  'staff123', 'Front',    'Desk',          'Active');
 
 -- ------------------------------------------------------------
 -- Sample doctor accounts (RoleID 2 = 'Doctor', seeded above).

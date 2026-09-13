@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Patient Record System - Medicines</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="module" src="./js/auth-guard.js"></script>
     <script type="module" src="./js/index-medicines.js"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
@@ -24,12 +25,14 @@
       <div class="container-fluid">
         <span class="navbar-brand">Patient Record System - Admin</span>
         <div class="navbar-nav">
+          <a class="nav-link" href="home.html">Home</a>
           <a class="nav-link" href="index.html">Patients</a>
           <a class="nav-link" href="doctors.html">Doctors</a>
           <a class="nav-link active" href="medicines.html">Medicines</a>
           <a class="nav-link" href="specializations.html">Specializations</a>
           <a class="nav-link" href="diagnoses.html">Diagnoses / ICD-10</a>
         </div>
+        <div class="ms-auto d-flex align-items-center" id="nav-user-info"></div>
       </div>
     </nav>
 

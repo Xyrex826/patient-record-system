@@ -28,6 +28,14 @@ export const updateModal = async (patientId, refreshDisplay) => {
         <option value="Female" ${p.Gender === "Female" ? "selected" : ""}>Female</option>
         <option value="Other" ${p.Gender === "Other" ? "selected" : ""}>Other</option>
       </select>
+      <input
+        type="text"
+        class="form-control mt-2"
+        id="upd-gender-details"
+        placeholder="Please specify"
+        value="${p.Gender === "Other" ? p.GenderDetails ?? "" : ""}"
+        style="${p.Gender === "Other" ? "" : "display: none;"}"
+      />
     </div>
     <div class="col-12 mb-2">
       <label class="form-label">Phone</label>
@@ -40,6 +48,12 @@ export const updateModal = async (patientId, refreshDisplay) => {
   `;
 
   document.getElementById("blank-main-div").innerHTML = myHtml;
+
+  document.getElementById("upd-gender").addEventListener("change", (event) => {
+    const detailsInput = document.getElementById("upd-gender-details");
+    detailsInput.style.display = event.target.value === "Other" ? "block" : "none";
+    if (event.target.value !== "Other") detailsInput.value = "";
+  });
 
   const modalFooter = document.getElementById("blank-modal-footer");
   modalFooter.innerHTML = `
@@ -61,9 +75,15 @@ export const updateModal = async (patientId, refreshDisplay) => {
       firstName: document.getElementById("upd-first-name").value,
       dob: document.getElementById("upd-dob").value,
       gender: document.getElementById("upd-gender").value,
+      genderDetails: document.getElementById("upd-gender-details").value,
       phone: document.getElementById("upd-phone").value,
       address: document.getElementById("upd-address").value,
     };
+
+    if (jsonData.gender === "Other" && !jsonData.genderDetails.trim()) {
+      alert("Please specify the gender.");
+      return;
+    }
 
     if (!isValidPhone(jsonData.phone)) {
       alert("Phone must contain digits only (7-15 digits), with no negative sign or letters.");
@@ -77,6 +97,8 @@ export const updateModal = async (patientId, refreshDisplay) => {
       myModal.hide();
     } else if (result?.error === "invalid_phone") {
       alert("Phone must contain digits only (7-15 digits), with no negative sign or letters.");
+    } else if (result?.error === "gender_details_required") {
+      alert("Please specify the gender.");
     } else {
       alert("ERROR");
     }

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patient Record System - Home</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="module" src="./js/auth-guard.js"></script>
+    <script type="module" src="./js/home.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <!-- ADMIN NAV / DASHBOARD -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#006400">
+      <div class="container-fluid">
+        <span class="navbar-brand">Patient Record System - Admin</span>
+        <div class="navbar-nav">
+          <a class="nav-link active" href="home.html">Home</a>
+          <a class="nav-link" href="index.html">Patients</a>
+          <a class="nav-link" href="doctors.html">Doctors</a>
+          <a class="nav-link" href="medicines.html">Medicines</a>
+          <a class="nav-link" href="specializations.html">Specializations</a>
+          <a class="nav-link" href="diagnoses.html">Diagnoses / ICD-10</a>
+        </div>
+        <div class="ms-auto d-flex align-items-center" id="nav-user-info"></div>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <div id="header-div" class="mb-4">
+        <h1 id="welcome-heading">Welcome</h1>
+        <p class="text-muted" id="welcome-subtext">Pick a module below to get started.</p>
+      </div>
+
+      <div class="row g-3" id="modules-grid">
+        <div class="col-sm-6 col-lg-4">
+          <a href="index.html" class="text-decoration-none">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title" style="color:#006400;">Patients</h5>
+                <p class="card-text text-muted">Manage the master list of patients.</p>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+          <a href="doctors.html" class="text-decoration-none">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title" style="color:#006400;">Doctors</h5>
+                <p class="card-text text-muted">Manage doctor accounts and specializations.</p>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+          <a href="medicines.html" class="text-decoration-none">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title" style="color:#006400;">Medicines</h5>
+                <p class="card-text text-muted">Manage the medicine master list.</p>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+          <a href="specializations.html" class="text-decoration-none">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title" style="color:#006400;">Specializations</h5>
+                <p class="card-text text-muted">Manage the list of medical specializations.</p>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+          <a href="diagnoses.html" class="text-decoration-none">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title" style="color:#006400;">Diagnoses / ICD-10</h5>
+                <p class="card-text text-muted">Manage the ICD-10 diagnosis reference list.</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

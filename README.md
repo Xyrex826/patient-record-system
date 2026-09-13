@@ -4,6 +4,9 @@ All five master file modules are implemented: **Patients**, **Doctors**, **Medic
 **Specializations**, and **Diagnoses / ICD-10**. All give the admin a CRUD screen, but Doctors is
 more involved because a "Doctor" is not one flat table in the ERD — see below.
 
+A **Login** / **Sign Up** flow now sits in front of all of that, and a **Home** dashboard is the
+first thing you see after signing in — see [Login, Sign Up & Home](#login-sign-up--home) below.
+
 ## Setup
 1. Import `database/patient_record_system.sql` into MySQL. It creates the `patient_record_system`
    database and:
@@ -22,12 +25,55 @@ more involved because a "Doctor" is not one flat table in the ERD — see below.
 2. Edit `api/connection-pdo.php` with your MySQL credentials if they differ from the XAMPP defaults.
 3. Put this whole `patient-record-system` folder inside your web server's document root
    (e.g. `htdocs/patient-record-system` for XAMPP).
-4. Update `baseApiUrl` in `js/index.js`, `js/index-doctors.js`, `js/index-medicines.js`,
-   `js/index-specializations.js`, and `js/index-diagnoses.js` if your folder path differs from
+4. Update `baseApiUrl` in `js/login.js`, `js/register.js`, `js/home.js`, `js/index.js`,
+   `js/index-doctors.js`, `js/index-medicines.js`, `js/index-specializations.js`, and
+   `js/index-diagnoses.js` if your folder path differs from
    `http://localhost/patient-record-system/api`.
-5. Open `index.html` (Patients), `doctors.html` (Doctors), `medicines.html` (Medicines),
-   `specializations.html` (Specializations), or `diagnoses.html` (Diagnoses / ICD-10) through
-   `http://localhost/...` (not `file://`) so the AJAX calls work. The nav bar links between them.
+5. Open `login.html` through `http://localhost/...` (not `file://`) so the AJAX calls work. Sign
+   in with one of the sample accounts above, or sign up for a new one, and you'll land on
+   `home.html`, which links out to `index.html` (Patients), `doctors.html` (Doctors),
+   `medicines.html` (Medicines), `specializations.html` (Specializations), and `diagnoses.html`
+   (Diagnoses / ICD-10). The nav bar on every page links between all of them, plus a Logout button.
+
+## Login, Sign Up & Home
+No new tables were added for this — it reuses the `ROLE` and `USERS` tables that already existed
+for the Doctors module.
+
+- **`login.html`** — sign-in form. Checks the username/password against `USERS` (joined to `ROLE`
+  for the role name), and blocks the login if the account's `Status` is `Inactive`. On success the
+  user's `UserID`, `Username`, `FirstName`, `LastName`, `RoleID`, and `RoleName` are kept in
+  `sessionStorage` under `currentUser`, and the browser is sent to `home.html`.
+- **`register.html`** — sign-up form (First/Last Name, Username, Password, Account Type). The
+  Account Type dropdown only offers **Admin** and **Staff**, not **Doctor** — a Doctor record is
+  `USERS` + `DOCTOR` (+ specializations), and that combined record is already created end-to-end
+  from the Doctors master file (`api/doctors.php` → `insertDoctor`), so self-service sign up
+  deliberately doesn't try to recreate that. `api/auth.php` also re-checks the role server-side in
+  case `Doctor` is ever submitted anyway.
+- **`home.html`** — the post-login landing page. Greets the signed-in user by name/role and shows a
+  card per module (Patients, Doctors, Medicines, Specializations, Diagnoses) linking into the
+  existing screens.
+- **`js/auth-guard.js`** — included on `home.html` and all five master file pages. Redirects to
+  `login.html` if no `currentUser` is in `sessionStorage`, and otherwise fills in the "Signed in as
+  ... | Logout" control now shown on the right side of every nav bar.
+
+### Try it right away
+Two sample accounts are seeded by the SQL file:
+
+| Username | Password | Role |
+|---|---|---|
+| `admin` | `admin123` | Admin |
+| `frontdesk` | `staff123` | Staff |
+
+### API operations (`api/auth.php`)
+| operation | method | purpose |
+|---|---|---|
+| `login` | POST | checks credentials, returns the user (minus password) or an error |
+| `register` | POST | creates a new `USERS` row (Admin/Staff only) |
+| `getSignupRoles` | GET | roles the Sign Up page is allowed to offer (everything except Doctor) |
+
+**Note:** exactly like the rest of this project, `Password` is compared/stored as plain text to
+match the class's teaching pattern — in a real system you'd use `password_hash()` /
+`password_verify()`.
 
 ## Patients — what's included
 - **Create**: form at the top of the page → "Add Patient".

@@ -12,6 +12,21 @@ class Patient {
         return $phone === "" || preg_match('/^[0-9]{7,15}$/', $phone) === 1;
     }
 
+    // GenderDetails is only meaningful (and required) when Gender = 'Other'.
+    // For Male/Female it's always stored as NULL so it can't get out of sync
+    // with a Gender value it doesn't apply to.
+    private function resolveGenderDetails($json) {
+        $gender = $json['gender'] ?? "";
+        $details = trim($json['genderDetails'] ?? "");
+        if ($gender !== "Other") {
+            return [true, null];
+        }
+        if ($details === "") {
+            return [false, null];
+        }
+        return [true, $details];
+    }
+
     // Returns ALL patients (Active + Inactive) - used by the admin master file screen
     function getAllPatients() {
         include "connection-pdo.php";
@@ -53,13 +68,19 @@ class Patient {
             return json_encode(["error" => "invalid_phone"]);
         }
 
-        $sql = "INSERT INTO PATIENT (FirstName, LastName, DateOfBirth, Gender, Phone, Address, Status)
-                VALUES (:firstName, :lastName, :dob, :gender, :phone, :address, 'Active')";
+        list($genderOk, $genderDetails) = $this->resolveGenderDetails($json);
+        if (!$genderOk) {
+            return json_encode(["error" => "gender_details_required"]);
+        }
+
+        $sql = "INSERT INTO PATIENT (FirstName, LastName, DateOfBirth, Gender, GenderDetails, Phone, Address, Status)
+                VALUES (:firstName, :lastName, :dob, :gender, :genderDetails, :phone, :address, 'Active')";
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(":firstName", $json['firstName']);
         $stmt->bindParam(":lastName", $json['lastName']);
         $stmt->bindParam(":dob", $json['dob']);
         $stmt->bindParam(":gender", $json['gender']);
+        $stmt->bindParam(":genderDetails", $genderDetails);
         $stmt->bindParam(":phone", $json['phone']);
         $stmt->bindParam(":address", $json['address']);
         $stmt->execute();
@@ -79,11 +100,17 @@ class Patient {
             return json_encode(["error" => "invalid_phone"]);
         }
 
+        list($genderOk, $genderDetails) = $this->resolveGenderDetails($json);
+        if (!$genderOk) {
+            return json_encode(["error" => "gender_details_required"]);
+        }
+
         $sql = "UPDATE PATIENT SET
                     FirstName = :firstName,
                     LastName = :lastName,
                     DateOfBirth = :dob,
                     Gender = :gender,
+                    GenderDetails = :genderDetails,
                     Phone = :phone,
                     Address = :address
                 WHERE PatientID = :patientId";
@@ -92,6 +119,7 @@ class Patient {
         $stmt->bindParam(":lastName", $json['lastName']);
         $stmt->bindParam(":dob", $json['dob']);
         $stmt->bindParam(":gender", $json['gender']);
+        $stmt->bindParam(":genderDetails", $genderDetails);
         $stmt->bindParam(":phone", $json['phone']);
         $stmt->bindParam(":address", $json['address']);
         $stmt->bindParam(":patientId", $json['patientId']);

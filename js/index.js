@@ -15,6 +15,13 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("show-inactive").addEventListener("change", () => {
     displayPatients();
   });
+
+  // Only show "Please specify" when Gender = Other.
+  document.getElementById("gender").addEventListener("change", (event) => {
+    const detailsInput = document.getElementById("gender-details");
+    detailsInput.style.display = event.target.value === "Other" ? "block" : "none";
+    if (event.target.value !== "Other") detailsInput.value = "";
+  });
 });
 
 const displayPatients = async () => {
@@ -64,7 +71,7 @@ const displayPatientsTable = (patients) => {
         <td>${patient.LastName}</td>
         <td>${patient.FirstName}</td>
         <td>${patient.DateOfBirth}</td>
-        <td>${patient.Gender}</td>
+        <td>${patient.Gender}${patient.Gender === "Other" && patient.GenderDetails ? ` (${patient.GenderDetails})` : ""}</td>
         <td>${patient.Phone ?? ""}</td>
         <td>${patient.Address ?? ""}</td>
         <td>
@@ -119,12 +126,18 @@ const insertPatient = async () => {
     lastName: document.getElementById("last-name").value,
     dob: document.getElementById("birth-date").value,
     gender: document.getElementById("gender").value,
+    genderDetails: document.getElementById("gender-details").value,
     phone: document.getElementById("phone").value,
     address: document.getElementById("address").value,
   };
 
   if (!jsonData.firstName || !jsonData.lastName || !jsonData.dob || !jsonData.gender) {
     alert("Please fill in First Name, Last Name, Date of Birth and Gender.");
+    return;
+  }
+
+  if (jsonData.gender === "Other" && !jsonData.genderDetails.trim()) {
+    alert("Please specify the gender.");
     return;
   }
 
@@ -149,6 +162,8 @@ const insertPatient = async () => {
     alert("Patient successfully saved!");
   } else if (response.data?.error === "invalid_phone") {
     alert("Phone must contain digits only (7-15 digits), with no negative sign or letters.");
+  } else if (response.data?.error === "gender_details_required") {
+    alert("Please specify the gender.");
   } else {
     alert("ERROR");
   }
@@ -175,6 +190,8 @@ const clearForm = () => {
   document.getElementById("last-name").value = "";
   document.getElementById("birth-date").value = "";
   document.getElementById("gender").value = "";
+  document.getElementById("gender-details").value = "";
+  document.getElementById("gender-details").style.display = "none";
   document.getElementById("phone").value = "";
   document.getElementById("address").value = "";
 };
